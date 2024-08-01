@@ -1,3 +1,6 @@
+use anyhow::{Context, Result};
+use std::fs;
+
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -31,3 +34,19 @@ pub struct BigError {
 //         MyError::Custom(s.to_string())
 //     }
 // }
+
+fn main() -> Result<(), anyhow::Error> {
+    println!("MyError size: {}", std::mem::size_of::<MyError>());
+
+    let filename = "non-existent.txt";
+    // let fd = fs::File::open(filename).context(format!("Can not find file: {}", filename));
+    let _fd = fs::File::open(filename).with_context(|| format!("Can not find file: {}", filename));
+
+    fail_with_error()?;
+
+    Ok(())
+}
+
+fn fail_with_error() -> Result<(), MyError> {
+    Err(MyError::Custom("Failed with error".to_string()))
+}
