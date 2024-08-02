@@ -13,6 +13,7 @@ derive_more = "0.99.18"
 opentelemetry = "0.24.0"
 opentelemetry-otlp = { version = "0.17.0", features = ["tonic"] }
 opentelemetry_sdk = { version = "0.24.1", features = ["rt-tokio"] }
+serde_with = "3.9.0"
 thiserror = "1.0.63"
 tracing = "0.1.40"
 tracing-appender = "0.2.3"
@@ -24,6 +25,7 @@ axum = { version = "0.7.5", features = ["http2", "query", "tracing"] }
 base64 = "0.22.1"
 derive_builder = "0.20.0"
 derive_more = "0.99.18"
+http = "1.1.0"
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.121"
 strum = { version = "0.26.3", features = ["derive"] }
