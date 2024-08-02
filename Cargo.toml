@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
+blake3 = "1.5.3"
 bytes = "1.7.1"
 chacha20poly1305 = "0.10.1"
 chrono = { version = "0.4.38", features = ["serde"] }
@@ -30,4 +31,4 @@ http = "1.1.0"
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.121"
 strum = { version = "0.26.3", features = ["derive"] }
-tokio = { version = "1.39.2", features = ["rt", "rt-multi-thread", "macros"] }
+tokio = { version = "1.39.2", features = ["fs", "rt", "rt-multi-thread", "macros"] }
