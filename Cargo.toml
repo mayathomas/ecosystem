@@ -25,10 +25,14 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 [dev-dependencies]
 axum = { version = "0.7.5", features = ["http2", "query", "tracing"] }
 base64 = "0.22.1"
+dashmap = "6.0.1"
 derive_builder = "0.20.0"
 derive_more = "0.99.18"
+futures = "0.3.30"
 http = "1.1.0"
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.121"
 strum = { version = "0.26.3", features = ["derive"] }
 tokio = { version = "1.39.2", features = ["fs", "rt", "rt-multi-thread", "macros"] }
+tokio-stream = "0.1.15"
+tokio-util = { version = "0.7.11", features = ["codec"] }
