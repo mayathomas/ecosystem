@@ -1,2 +1,11 @@
 
 GET http://localhost:8080/
+
+### update handler
+PATCH http://localhost:8080/
+Content-Type: application/json
+
+{
+    "age":10,
+    "skills": ["Rust", "Java"]
+}
