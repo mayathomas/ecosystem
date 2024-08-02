@@ -7,7 +7,8 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
-chrono = "0.4.38"
+chacha20poly1305 = "0.10.1"
+chrono = { version = "0.4.38", features = ["serde"] }
 derive_more = "0.99.18"
 opentelemetry = "0.24.0"
 opentelemetry-otlp = { version = "0.17.0", features = ["tonic"] }
@@ -20,6 +21,7 @@ tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 
 [dev-dependencies]
 axum = { version = "0.7.5", features = ["http2", "query", "tracing"] }
+base64 = "0.22.1"
 derive_builder = "0.20.0"
 derive_more = "0.99.18"
 serde = { version = "1.0.204", features = ["derive"] }
