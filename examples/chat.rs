@@ -1,4 +1,8 @@
-use std::{fmt, net::SocketAddr, sync::Arc};
+use std::{
+    fmt::{self, Debug},
+    net::SocketAddr,
+    sync::Arc,
+};
 
 use anyhow::Result;
 use dashmap::DashMap;
@@ -8,7 +12,9 @@ use tokio::{
     sync::mpsc,
 };
 use tokio_util::codec::{Framed, LinesCodec};
+#[allow(unused_imports)]
 use tracing::{info, level_filters::LevelFilter, warn};
+#[allow(unused_imports)]
 use tracing_subscriber::{fmt::Layer, layer::SubscriberExt, util::SubscriberInitExt, Layer as _};
 
 const MAX_MESSAGES: usize = 128;
@@ -19,15 +25,16 @@ struct State {
 }
 
 #[derive(Debug)]
-struct Message {
-    sender: String,
-    content: String,
-}
-
-#[derive(Debug)]
 struct Peer {
     username: String,
     stream: SplitStream<Framed<TcpStream, LinesCodec>>,
+}
+
+#[derive(Debug)]
+enum Message {
+    UserJoined(String),
+    UserLeft(String),
+    Chat { sender: String, content: String },
 }
 
 impl State {
@@ -73,9 +80,32 @@ impl State {
     }
 }
 
+impl Message {
+    fn user_joined(username: &str) -> Self {
+        let content = format!("{} has joined the chat", username);
+        Self::UserJoined(content.to_string())
+    }
+
+    fn user_left(username: &str) -> Self {
+        let content = format!("{} has left the chat", username);
+        Self::UserLeft(content.to_string())
+    }
+
+    fn chat(sender: impl Into<String>, content: impl Into<String>) -> Self {
+        Self::Chat {
+            sender: sender.into(),
+            content: content.into(),
+        }
+    }
+}
+
 impl fmt::Display for Message {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}: {}", self.sender, self.content)
+        match self {
+            Self::UserJoined(content) => write!(f, "[{}]", content),
+            Self::UserLeft(content) => write!(f, "[{} :(]", content),
+            Self::Chat { sender, content } => write!(f, "{}: {}", sender, content),
+        }
     }
 }
 
@@ -91,11 +121,8 @@ async fn handle_client(state: Arc<State>, addr: SocketAddr, stream: TcpStream) -
 
     let mut peer = state.add(addr, username, stream).await;
 
-    // notify all other clients that a new user has joined
-    let message = Arc::new(Message {
-        sender: "Server".to_string(),
-        content: format!("{} has joined the chat", peer.username),
-    });
+    let message = Arc::new(Message::user_joined(&peer.username));
+    info!("{}", message);
     state.broadcast(addr, message).await;
 
     while let Some(line) = peer.stream.next().await {
@@ -107,10 +134,7 @@ async fn handle_client(state: Arc<State>, addr: SocketAddr, stream: TcpStream) -
             }
         };
 
-        let message = Arc::new(Message {
-            sender: peer.username.clone(),
-            content: line,
-        });
+        let message = Arc::new(Message::chat(&peer.username, line));
 
         state.broadcast(addr, message).await;
     }
@@ -118,10 +142,8 @@ async fn handle_client(state: Arc<State>, addr: SocketAddr, stream: TcpStream) -
     //remote the peer from the state
     state.peer.remove(&addr);
     // notify others when peer has left the chat or line reading failed
-    let message = Arc::new(Message {
-        sender: "Server".to_string(),
-        content: format!("{} has left the chat", peer.username),
-    });
+    let message = Arc::new(Message::user_left(&peer.username));
+    info!("{}", message);
 
     state.broadcast(addr, message).await;
     Ok(())
@@ -129,8 +151,9 @@ async fn handle_client(state: Arc<State>, addr: SocketAddr, stream: TcpStream) -
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let layer = Layer::new().pretty().with_filter(LevelFilter::INFO);
-    tracing_subscriber::registry().with(layer).init();
+    // let layer = Layer::new().pretty().with_filter(LevelFilter::INFO);
+    // tracing_subscriber::registry().with(layer).init();
+    console_subscriber::init();
 
     let addr = "0.0.0.0:8080";
     let listener = TcpListener::bind(addr).await?;
