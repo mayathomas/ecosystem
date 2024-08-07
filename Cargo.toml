@@ -17,6 +17,7 @@ opentelemetry = "0.24.0"
 opentelemetry-otlp = { version = "0.17.0", features = ["tonic"] }
 opentelemetry_sdk = { version = "0.24.1", features = ["rt-tokio"] }
 serde_with = "3.9.0"
+sqlx = { version = "0.8.0", features = ["postgres", "runtime-tokio", "tls-rustls"] }
 thiserror = "1.0.63"
 tracing = "0.1.40"
 tracing-appender = "0.2.3"
@@ -33,6 +34,7 @@ derive_more = "0.99.18"
 futures = "0.3.30"
 http = "1.1.0"
 loom = "0.7.2"
+nanoid = "0.4.0"
 serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.121"
 strum = { version = "0.26.3", features = ["derive"] }

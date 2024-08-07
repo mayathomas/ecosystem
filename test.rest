@@ -9,3 +9,14 @@ Content-Type: application/json
     "age":10,
     "skills": ["Rust", "Java"]
 }
+
+### url shortener
+POST http://localhost:9876/
+Content-Type: application/json
+
+{
+    "url": "https://google.com"
+}
+
+### get shortened url
+GET http://127.0.0.1:9876/VUSvvU
